@@ -26,5 +26,5 @@ Design explorations live in a local `demos/` folder that is not published.
 
 Query parameters:
 
-- `mock=sample|midnight|notomorrow|none|stale|fail` (comma-separated) – replaces live data with fixtures
+- `mock=sample|midnight|notomorrow|none|fail` (comma-separated) – replaces live data with fixtures
 - `now=2026-10-31T12:40` – fake Kyiv clock that keeps running from this moment

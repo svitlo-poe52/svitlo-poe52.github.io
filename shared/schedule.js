@@ -4,8 +4,6 @@ export const QUEUE_LABEL = QUEUE.replace('GPV', '');
 
 const TZ = 'Europe/Kyiv';
 const REFRESH_MS = 3 * 60 * 1000;
-// The parser only bumps lastUpdated when the schedule changes, so quiet hours are normal.
-const STALE_MS = 6 * 60 * 60 * 1000;
 
 const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
 const WEEKDAYS = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота'];
@@ -172,7 +170,6 @@ export function buildModel(json, t = now()) {
   const afterNext = idx >= 0 ? segments[idx + 2] ?? null : null;
   const nextOff = segments.find((s) => s.state === 'off' && s.end > t) ?? null;
 
-  const lastUpdated = json?.lastUpdated ? Date.parse(json.lastUpdated) : NaN;
   return {
     now: t, days, today, tomorrow, segments, current, next, afterNext, nextOff,
     tomorrowPublished: !!tomorrow,
@@ -180,8 +177,6 @@ export function buildModel(json, t = now()) {
     progress: current ? (t - current.start) / (current.end - current.start) : 0,
     remaining: current ? current.end - t : 0,
     scheduleUpdate: json?.fact?.update ?? null,
-    stale: Number.isFinite(lastUpdated) && t - lastUpdated > STALE_MS,
-    lastUpdated,
   };
 }
 
@@ -238,7 +233,8 @@ export function statusNotes(m, status) {
   const notes = [];
   if (status.error && !m) notes.push('Не вдалося завантажити графік. Спробую ще раз за кілька хвилин.');
   else if (status.error) notes.push('Не вдалося оновити дані, показую останні завантажені.');
-  if (m?.stale) notes.push(`Дані давно не оновлювались (парсер востаннє: ${fmtTime(m.lastUpdated)}, ${fmtDate(kyivParts(m.lastUpdated))}).`);
+  // No age-based warning: the parser only writes when the schedule changes, so its timestamp says nothing about liveness.
+  if (m && !m.today) notes.push('У даних немає графіка на сьогодні.');
   if (m && !m.tomorrowPublished) notes.push('Графік на завтра ще не опубліковано.');
   return notes;
 }
@@ -279,7 +275,7 @@ export function start(onChange) {
   });
 }
 
-// ---------- mocks: ?mock=sample|midnight|notomorrow|none|stale|fail (comma-separated) ----------
+// ---------- mocks: ?mock=sample|midnight|notomorrow|none|fail (comma-separated) ----------
 
 const PATTERNS = {
   real: 'yes yes yes yes yes yes yes yes yes yes second no msecond yes yes yes second no no mfirst yes yes second no',
@@ -309,7 +305,7 @@ function mockJson(flags) {
 
   const data = { [todayKey]: { [QUEUE]: toHours(today) } };
   if (tomorrow) data[tomorrowKey] = { [QUEUE]: toHours(tomorrow) };
-  const updated = flags.includes('stale') ? t - 7 * 3600 * 1000 : t - 4 * 60 * 1000;
+  const updated = t - 4 * 60 * 1000;
   const up = kyivParts(updated);
   return {
     lastUpdated: new Date(updated).toISOString(),
