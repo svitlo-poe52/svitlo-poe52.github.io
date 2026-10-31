@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Світло · демки</title>
+<style>
+  :root { --paper: #efede8; --ink: #1d1c1a; --muted: #7a766f; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --paper: #131312; --ink: #e4e0d8; --muted: #8a857c; } }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 ui-monospace, 'IBM Plex Mono', monospace; }
+  main { max-width: 640px; margin: 0 auto; padding: 40px 16px; }
+  h1 { font-weight: 400; font-size: 14px; letter-spacing: 0.5em; text-transform: uppercase; margin: 0 0 32px; }
+  a { color: inherit; display: block; padding: 16px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); text-decoration: none; }
+  a:hover span { text-decoration: underline; }
+  small { display: block; color: var(--muted); }
+  .mocks { margin-top: 32px; color: var(--muted); font-size: 12px; }
+  code { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Світло · 5.2 · демки</h1>
+  <a href="a-tearsheet/"><span>A — Tearsheet</span><small>Теплий папір, серифи. Слово «СВІТЛО» вицвітає буква за буквою; кімната на ілюстрації тьмяніє.</small></a>
+  <a href="b-xerox/"><span>B — Xerox Moon</span><small>Ксерокс і растр. Фаза півтонового місяця — це плин інтервалу; доба вертикальним зошитом.</small></a>
+  <a href="d-filament/"><span>D — Filament</span><small>Цифри головні. Їхня товщина — це залишок світла: тоншають до вимкнення, наливаються до увімкнення. Графік — лінія, товста там, де світло є.</small></a>
+  <a href="e-tissue/"><span>E — Tissue</span><small>Великі серифні цифри; калька повільно насувається на них, поки минає інтервал. Графік — самі числа годин, кожне розділене на дві половини.</small></a>
+  <a href="h-glow/"><span>H — Glow</span><small>Garamond і друкарська машинка поверх розмитого поля світла лампи (прийом BlurUnderlay з Danny Kaplan). Лампа тьмяніє до вимкнення і ледь дихає; хвилини міняються через розмиття. Графік — на матовій панелі.</small></a>
+  <a href="i-plaster/"><span>I — Plaster</span><small>Гіпсова стіна, освітлена SVG-фільтром, як на головній Bodmer-Turner. Світло опускається до вимкнення і тіні видовжуються; без світла стіна пласка й сіра. Камера повільно дрейфує, хвилина змінюється шторкою.</small></a>
+  <a href="../"><span>J — Oval ★</span><small>Обраний напрям. Кольорова смуга за станом, чорний овал з відліком, дві розмиті плями кружляють навпроти одна одної. Мерехтливе зерно на всю сторінку.</small></a>
+  <a href="k-square/"><span>K — Square (на потім)</span><small>Квадрат з WebGL-анімацією: плівка, фотограма, зерно. Відкладено, щоб допиляти пізніше.</small></a>
+  <p class="mocks">Тестові стани: додай <code>?mock=sample</code>, <code>midnight</code>, <code>notomorrow</code>, <code>none</code>, <code>stale</code>, <code>fail</code> (через кому) і/або <code>&amp;now=2026-10-31T12:40</code>.</p>
+</main>
+</body>
+</html>

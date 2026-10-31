@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Світло · Square</title>
+<script src="../../shared/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Mono is used only for the digits and the Latin header, so it is subset to those glyphs. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libertinus+Mono&text=0123456789%3A%E2%80%93SVITLOPE.%20&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap">
+<link rel="stylesheet" href="../noir/common.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-state="unknown">
+<main class="page">
+  <header class="top">
+    <span>Svitlo</span>
+    <button class="theme" type="button" data-theme-toggle aria-label="Змінити тему">◐</button>
+    <span>POE&nbsp;<span data-queue></span></span>
+  </header>
+
+  <p class="sub" data-sub>Завантаження</p>
+  <p class="clock" data-clock aria-live="polite">––:––</p>
+
+  <div class="square" data-square aria-hidden="true">
+    <div class="inner">
+      <div class="rim"></div>
+      <div class="warm"></div>
+      <div class="glow"></div>
+    </div>
+    <canvas class="fx" data-fx></canvas>
+  </div>
+  <nav class="fx-switch" data-fx-switch aria-label="Анімація квадрата">
+    <button type="button" data-mode="smear">плівка</button>
+    <button type="button" data-mode="halo">фотограма</button>
+    <button type="button" data-mode="grain">зерно</button>
+  </nav>
+
+  <p class="spread dim head" data-head></p>
+
+  <div data-days></div>
+
+  <ul class="notes" data-notes></ul>
+  <footer class="foot"><span>Графік від <span data-update>—</span></span><a href="../">Інші демки</a></footer>
+</main>
+<div class="bleed"></div>
+<div class="texture"></div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

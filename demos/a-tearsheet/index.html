@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Світло · Tearsheet</title>
+<script src="../../shared/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../../shared/paper.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="pulp"></div>
+<div class="grain"></div>
+
+<main class="sheet">
+  <header class="masthead">
+    <span class="brand">Світло — Черга <span data-queue></span></span>
+    <button class="theme" type="button" data-theme-toggle>Тема ( <span data-theme-label>світла</span> )</button>
+  </header>
+
+  <section class="lede">
+    <p class="prose" data-prose>Завантажую графік…</p>
+    <dl class="meta">
+      <dt>Стан</dt><dd data-meta-state>—</dd>
+      <dt>Наступне</dt><dd data-meta-next>—</dd>
+      <dt>Графік від</dt><dd data-meta-update>—</dd>
+    </dl>
+  </section>
+
+  <section class="word" aria-hidden="true" data-word></section>
+
+  <figure class="plate" data-plate>
+    <div class="plate-wall"></div>
+    <div class="plate-glow"></div>
+    <div class="plate-shelf"></div>
+    <figcaption><span>Іл. 1</span> <span data-plate-caption>Освітленість кімнати</span></figcaption>
+  </figure>
+
+  <section class="schedule" data-schedule></section>
+
+  <ul class="notes" data-notes></ul>
+
+  <footer class="colophon">
+    <span>Дані: Полтаваобленерго через OE_OUTAGE_DATA</span>
+    <a href="../">Інші демки</a>
+  </footer>
+</main>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+/* Values come from the Figma frames (1080px wide). --u is one Figma pixel.
+   It scales with width on phones and with height on wide screens, so the first screen always fits. */
+:root {
+  --u: calc(min(100vw, 760px, 58vh) / 1080);
+  --gut: max(calc(85 * var(--u)), 16px);
+  --hw: min(calc(911 * 1.35 * var(--u)), calc(100vw - 2 * var(--gut)));
+  --dim: 0.58;
+  --bg: #1c1a14;
+  --ink: #d8d5cf;
+  --text: #e8e7e5;
+  --hole: var(--bg);
+  --glow: #ffffff;
+  --c-on: #3a4f28;
+  --c-off: #582316;
+  --c-maybe: #6d4a16;
+  --mono: 'Libertinus Mono', ui-monospace, monospace;
+  --sans: 'Montserrat', system-ui, sans-serif;
+  color-scheme: dark;
+}
+@supports (height: 1svh) { :root { --u: calc(min(100vw, 760px, 58svh) / 1080); } }
+:root[data-theme="light"] {
+  --bg: #e6e1d8; --ink: #24211c; --text: #24211c; --glow: #fff6ea;
+  --c-on: #7f945f; --c-off: #b4614e; --c-maybe: #c0954a;
+  --dim: 0.55;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #e6e1d8; --ink: #24211c; --text: #24211c; --glow: #fff6ea;
+    --c-on: #7f945f; --c-off: #b4614e; --c-maybe: #c0954a;
+    --dim: 0.55;
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 500 calc(30 * var(--u))/1.41 var(--sans);
+  overflow-x: hidden;
+  transition: background-color 1s, color 1s;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+
+.page { position: relative; padding: 0 var(--gut) calc(120 * var(--u)); }
+.col, .spread.col { width: var(--hw); max-width: 100%; margin-inline: auto; }
+
+/* First screen: header, status, oval, next change and today's schedule share the viewport height. */
+.screen {
+  display: flex; flex-direction: column;
+  min-height: 100vh; min-height: 100svh;
+  padding: calc(80 * var(--u)) 0 calc(80 * var(--u));
+}
+.gap { flex: 1 1 0; }
+.g1 { flex-grow: 3; min-height: calc(150 * var(--u)); }
+.g2, .g3 { flex-grow: 2; min-height: calc(110 * var(--u)); }
+
+/* Caps text: 25% tracking everywhere in the file. */
+.caps { text-transform: uppercase; letter-spacing: 0.25em; }
+
+.top {
+  position: relative;
+  display: flex; justify-content: space-between; align-items: center;
+  font: 400 calc(30 * var(--u))/1.12 var(--mono);
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--ink);
+}
+.top > span { opacity: var(--dim); }
+.top > :last-child { margin-right: -0.25em; }
+.star {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(106 * var(--u)); height: calc(106 * var(--u));
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+.star svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.star svg { color: var(--ink); }
+
+/* Words spread across the full measure, as Figma's justified last line. */
+.spread {
+  display: flex; justify-content: space-between;
+  margin: 0;
+  font-size: calc(24 * var(--u)); line-height: 1.41;
+  letter-spacing: 0.25em; text-transform: uppercase;
+}
+.spread span:last-child { margin-right: -0.25em; }
+.dim { opacity: var(--dim); }
+.sw { opacity: 0.5; }
+
+.sub {
+  margin: 0; text-align: center;
+  font-size: calc(36 * var(--u)); line-height: 1.41;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  opacity: var(--dim);
+}
+.sub span { margin-right: -0.25em; }
+
+.clock {
+  margin: 0;
+  font: 400 calc(var(--clock, 304) * var(--u))/1.12 var(--mono);
+  letter-spacing: -0.05em;
+  color: var(--ink); opacity: 0.9;
+  text-align: center; white-space: nowrap;
+}
+
+/* Day dots: one per hour; top half is the first 30 minutes. */
+.day + .day, .rest .day { margin-top: calc(100 * var(--u)); }
+.dots { display: flex; justify-content: space-between; }
+.dot {
+  position: relative;
+  width: calc(20 * var(--u)); aspect-ratio: 1; border-radius: 50%;
+  background: linear-gradient(180deg, var(--a) 50%, var(--b) 50%);
+}
+.dot.past { opacity: 0.35; }
+.dot.now::after {
+  content: ''; position: absolute; inset: calc(-9 * var(--u)); border-radius: 50%;
+  border: 1px solid var(--ink); opacity: 0.5;
+}
+.day .spread { margin-top: calc(33 * var(--u)); opacity: 0.9; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.list li {
+  display: grid; grid-template-columns: calc(116 * var(--u)) 1fr auto; align-items: baseline;
+  height: calc(62 * var(--u)); padding-top: calc(10 * var(--u));
+  letter-spacing: 0.25em; text-transform: uppercase;
+  opacity: 0.9;
+}
+.list li.past { opacity: 0.3; }
+.list .d { text-align: right; margin-right: -0.25em; }
+
+.notes { list-style: none; padding: 0; margin: calc(60 * var(--u)) 0 0; font-size: calc(22 * var(--u)); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
+.notes:empty { display: none; }
+.foot {
+  margin-top: calc(100 * var(--u));
+  display: flex; justify-content: space-between; gap: 16px;
+  font-size: calc(20 * var(--u)); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.3;
+}
+
+/* Whole-frame finish: a faint backdrop blur bleeds the ink, then the scanned texture. */
+.bleed {
+  position: fixed; inset: 0; pointer-events: none; z-index: 10;
+  -webkit-backdrop-filter: blur(calc(0.75 * var(--u)));
+  backdrop-filter: blur(calc(0.75 * var(--u)));
+}
+.texture {
+  position: fixed; inset: 0; pointer-events: none; z-index: 11;
+  background-repeat: repeat; background-size: 256px;
+}
+
+/* Flickering grain over the whole page: one noise tile jumping between offsets. */
+.flicker {
+  position: fixed; inset: -50%; z-index: 12; pointer-events: none;
+  opacity: var(--flicker-opacity, 0.09);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: flicker 0.7s steps(1) infinite;
+}
+:root[data-theme="light"] .flicker { --flicker-opacity: 0.14; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .flicker { --flicker-opacity: 0.14; } }
+@keyframes flicker {
+  0% { transform: translate(0, 0); }
+  14% { transform: translate(-7%, 4%); }
+  28% { transform: translate(5%, -9%); }
+  42% { transform: translate(-11%, -3%); }
+  57% { transform: translate(8%, 10%); }
+  71% { transform: translate(-4%, 7%); }
+  85% { transform: translate(12%, -6%); }
+}
+@media (prefers-reduced-motion: reduce) { .flicker { animation: none; } }

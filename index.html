@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Світло · 5.2</title>
+<meta name="description" content="Відлік до вимкнення та увімкнення світла і графік відключень для черги 5.2, Полтаваобленерго.">
+<script src="shared/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Mono is used only for the digits and the Latin header, so it is subset to those glyphs. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libertinus+Mono&text=0123456789%3A%E2%80%93SVITLOPE.%20&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap">
+<link rel="stylesheet" href="demos/noir/common.css">
+<link rel="stylesheet" href="demos/j-oval/style.css">
+</head>
+<body data-state="unknown">
+<main class="page">
+  <section class="screen">
+  <header class="top">
+    <span>Svitlo</span>
+    <button class="star" type="button" data-theme-toggle aria-label="Змінити тему">
+      <svg viewBox="-10 -10 106 106" aria-hidden="true">
+        <!-- Figma: a soft-edged star mask (blur 3) over a heavily blurred outline (blur 20). -->
+        <defs>
+          <filter id="star-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.5"/></filter>
+          <filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+          <mask id="star-mask" maskUnits="userSpaceOnUse" x="-10" y="-10" width="106" height="106"><path d="M0 43C23.75 43 43 23.75 43 0C43 23.75 62.25 43 86 43C62.25 43 43 62.25 43 86C43 62.25 23.75 43 0 43Z" fill="#fff" filter="url(#star-soft)"/></mask>
+        </defs>
+        <g mask="url(#star-mask)">
+          <path d="M0 43C23.75 43 43 23.75 43 0C43 23.75 62.25 43 86 43C62.25 43 43 62.25 43 86C43 62.25 23.75 43 0 43Z" fill="none" stroke="currentColor" stroke-width="9" filter="url(#star-glow)"/>
+        </g>
+      </svg>
+    </button>
+    <span>POE&nbsp;<span data-queue></span></span>
+  </header>
+
+  <div class="gap g1"></div>
+  <p class="spread dim head col" data-head><span>Завантаження</span></p>
+
+  <div class="stage">
+    <div class="band" aria-hidden="true">
+      <div class="rim"></div>
+      <div class="spot"></div>
+      <div class="spot spot-b"></div>
+      <div class="ring"></div>
+      <div class="hole"></div>
+    </div>
+    <p class="clock" data-clock aria-live="polite">––:––</p>
+  </div>
+
+  <div class="gap g2"></div>
+  <p class="sub" data-sub></p>
+  <div class="gap g3"></div>
+  <div class="col" data-today></div>
+  </section>
+
+  <div class="rest col">
+    <div data-days></div>
+    <ul class="notes" data-notes></ul>
+  </div>
+  <footer class="foot"><span>Графік від <span data-update>—</span></span><a href="demos/">Демки</a></footer>
+</main>
+<div class="bleed"></div>
+<div class="flicker" aria-hidden="true"></div>
+<div class="texture"></div>
+
+<script type="module" src="demos/j-oval/main.js"></script>
+</body>
+</html>

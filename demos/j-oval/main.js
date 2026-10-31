@@ -1,0 +1,6 @@
+import { run } from '../noir/common.js';
+
+run({
+  tone: (s) => `var(--c-${s === 'unknown' ? 'maybe' : s})`,
+  onHero() {},
+});

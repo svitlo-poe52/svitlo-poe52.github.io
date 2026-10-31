@@ -1,0 +1,70 @@
+/* Figma frame "Instagram story - 184". Blur radii are halved: Figma's radius is about 2x CSS sigma. */
+body { --tone: #3a3733; }
+body[data-state="off"] { --tone: #67180d; }
+body[data-state="on"] { --tone: #2d4a1f; }
+body[data-state="maybe"] { --tone: #6a420a; }
+:root[data-theme="light"] body { --tone: #b3ada3; }
+:root[data-theme="light"] body[data-state="off"] { --tone: #c4806f; }
+:root[data-theme="light"] body[data-state="on"] { --tone: #9aa784; }
+:root[data-theme="light"] body[data-state="maybe"] { --tone: #cdac74; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) body { --tone: #b3ada3; }
+  :root:not([data-theme="dark"]) body[data-state="off"] { --tone: #c4806f; }
+  :root:not([data-theme="dark"]) body[data-state="on"] { --tone: #9aa784; }
+  :root:not([data-theme="dark"]) body[data-state="maybe"] { --tone: #cdac74; }
+}
+
+.stage { position: relative; margin: calc(34 * var(--u)) calc(50% - 50vw) 0; width: 100vw; }
+.band {
+  position: relative;
+  height: calc(742 * var(--u));
+  overflow: hidden;
+  background: var(--tone);
+  filter: blur(calc(1.5 * var(--u)));
+  transition: background-color 3s ease;
+}
+.band > * { position: absolute; }
+.rim { inset: 0; border: calc(26 * var(--u)) solid var(--glow); filter: blur(calc(44 * var(--u))); }
+.ring, .hole {
+  left: 50%; top: 50%;
+  width: var(--hw); height: calc(570 * var(--u));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.ring { border: calc(26 * var(--u)) solid var(--glow); filter: blur(calc(44 * var(--u))); }
+.hole { background: var(--hole); transition: background-color 1s; }
+
+/* Two 254px light spots ride an ellipse just outside the hole, opposite each other, one lap every 40s.
+   Two eased half-swings, a quarter period apart, trace the ellipse without JS. */
+@property --ox { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --oy { syntax: '<number>'; inherits: false; initial-value: 0; }
+.spot {
+  left: 50%; top: 50%;
+  width: calc(254 * var(--u)); height: calc(254 * var(--u));
+  margin: calc(-127 * var(--u)) 0 0 calc(-127 * var(--u));
+  border-radius: 50%;
+  background: var(--glow);
+  opacity: 0.6;
+  filter: blur(calc(111 * var(--u)));
+  transform: translate(calc(var(--ox) * var(--hw) * 0.535), calc(var(--oy) * 305 * var(--u)));
+  animation: orbit-x 20s ease-in-out -10s infinite alternate, orbit-y 20s ease-in-out 0s infinite alternate;
+}
+@keyframes orbit-x { from { --ox: -1; } to { --ox: 1; } }
+@keyframes orbit-y { from { --oy: -1; } to { --oy: 1; } }
+/* Half a lap ahead: always diagonally opposite the first spot. */
+.spot-b { animation-delay: -30s, -20s; }
+body[data-state="maybe"] .spot { animation: orbit-x 20s ease-in-out -10s infinite alternate, orbit-y 20s ease-in-out 0s infinite alternate, blink 3.4s steps(1) infinite; }
+body[data-state="maybe"] .spot-b { animation-delay: -30s, -20s, -1.7s; }
+@keyframes blink { 0%, 100% { opacity: 0.6; } 22% { opacity: 0.2; } 25% { opacity: 0.55; } 68% { opacity: 0.25; } }
+
+.stage .clock {
+  --clock: 250;
+  position: absolute; left: 0; right: 0; top: 50%;
+  transform: translateY(-50%);
+  filter: blur(calc(1.5 * var(--u)));
+}
+
+
+.texture { background-image: url("../../assets/noise-tile.webp"); mix-blend-mode: overlay; }
+
+.foot { width: var(--hw); max-width: 100%; margin-inline: auto; }

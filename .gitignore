@@ -1,0 +1,8 @@
+# Personal Figma API token
+.figma-token
+
+# Full-size texture exports; the site uses the WebP files in assets/
+*.jpg
+
+# Local preview config
+.claude/
