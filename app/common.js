@@ -10,13 +10,15 @@ function copy(m, c) {
   if (!m.current) return { head: 'Графіка на сьогодні немає', sub: '' };
   const n = m.next;
   if (c.state === 'on') {
-    if (c.empty) return { head: 'Згідно з графіком світло є', sub: 'Відключень попереду немає' };
+    // Tomorrow's outages count too, so "none ahead" is only claimed once tomorrow is published.
+    if (c.empty) return { head: 'Згідно з графіком світло є', sub: m.tomorrowPublished ? 'Відключень попереду немає' : 'Сьогодні відключень<br>більше немає' };
     return { head: 'Згідно з графіком світло є', sub: (n && n.state) === 'maybe' ? `Можливе відключення<br>о ${c.at}` : `Відключення заплановане<br>о ${c.at}` };
   }
   if (c.state === 'off') {
     if (c.empty) return { head: 'Згідно з графіком світло відсутнє', sub: 'До кінця відомого графіка' };
-    if ((n && n.state) === 'maybe' && (m.afterNext && m.afterNext.state) === 'on') {
-      return { head: 'Згідно з графіком світло відсутнє', sub: `Увімкнення можливе о ${c.at}<br>напевно о ${fmtTime(m.afterNext.start)}` };
+    // Power comes back somewhere inside the switching half-hour.
+    if ((n && n.state) === 'maybe') {
+      return { head: 'Згідно з графіком світло відсутнє', sub: `Увімкнення заплановане<br>після ${c.at}` };
     }
     return { head: 'Згідно з графіком світло відсутнє', sub: `Увімкнення заплановане<br>о ${c.at}` };
   }
