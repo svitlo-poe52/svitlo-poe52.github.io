@@ -2,7 +2,10 @@ const SOURCE = 'https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/ma
 export const QUEUE = 'GPV5.2';
 export const QUEUE_LABEL = QUEUE.replace('GPV', '');
 
-const TZ = 'Europe/Kyiv';
+// Older engines (iOS 12–15 Safari) only know the pre-2022 name.
+const TZ = (() => {
+  try { new Intl.DateTimeFormat('en', { timeZone: 'Europe/Kyiv' }); return 'Europe/Kyiv'; } catch (e) { return 'Europe/Kiev'; }
+})();
 const REFRESH_MS = 3 * 60 * 1000;
 
 const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
@@ -22,10 +25,10 @@ const HALVES = {
 
 function resolveNeighbours(slots) {
   for (let i = 0; i < slots.length; i++) {
-    if (slots[i].state === 'prev') slots[i].state = slots[i - 1]?.state ?? 'on';
+    if (slots[i].state === 'prev') slots[i].state = (slots[i - 1] ? slots[i - 1].state : 'on');
   }
   for (let i = slots.length - 1; i >= 0; i--) {
-    if (slots[i].state === 'next') slots[i].state = slots[i + 1]?.state ?? 'on';
+    if (slots[i].state === 'next') slots[i].state = (slots[i + 1] ? slots[i + 1].state : 'on');
   }
   for (const s of slots) if (s.state === 'prev' || s.state === 'next') s.state = 'on';
 }
@@ -43,6 +46,8 @@ export function kyivParts(ms) {
     if (p.type === 'weekday') o.weekday = WD[p.value];
     else if (p.type !== 'literal') o[p.type] = +p.value;
   }
+  // Engines that ignore hourCycle report midnight as 24.
+  if (o.hour === 24) o.hour = 0;
   return o;
 }
 
@@ -95,12 +100,12 @@ function buildDay(key, statuses, p, todayP) {
   const slots = [];
   for (let i = 0; i < 48; i++) {
     const hour = Math.floor(i / 2);
-    const status = statuses?.[String(hour + 1)];
-    const state = HALVES[status]?.[i % 2] ?? 'unknown';
+    const status = statuses ? statuses[String(hour + 1)] : undefined;
+    const state = HALVES[status] ? HALVES[status][i % 2] : 'unknown';
     slots.push({ state, start: kyivToEpoch(p.year, p.month, p.day, hour, (i % 2) * 30) });
   }
   const end = kyivToEpoch(p.year, p.month, p.day + 1);
-  slots.forEach((s, i) => { s.end = slots[i + 1]?.start ?? end; });
+  slots.forEach((s, i) => { s.end = slots[i + 1] ? slots[i + 1].start : end; });
   const isToday = p.year === todayP.year && p.month === todayP.month && p.day === todayP.day;
   return {
     key, date: p, start: slots[0].start, end, slots, isToday,
@@ -126,8 +131,8 @@ function dayOutages(day, segments) {
   const res = [];
   segments.forEach((seg, i) => {
     if (seg.state !== 'off') return;
-    const before = segments[i - 1]?.state === 'maybe' ? segments[i - 1] : null;
-    const after = segments[i + 1]?.state === 'maybe' ? segments[i + 1] : null;
+    const before = segments[i - 1] && segments[i - 1].state === 'maybe' ? segments[i - 1] : null;
+    const after = segments[i + 1] && segments[i + 1].state === 'maybe' ? segments[i + 1] : null;
     const start = Math.max(seg.start, day.start);
     const end = Math.min(seg.end, day.end);
     if (start >= end) return;
@@ -149,14 +154,14 @@ export function buildModel(json, t = now()) {
   const sameDate = (a, b) => a.year === b.year && a.month === b.month && a.day === b.day;
 
   const days = [];
-  for (const key of Object.keys(json?.fact?.data ?? {}).sort((a, b) => a - b)) {
+  for (const key of Object.keys((json && json.fact && json.fact.data) || {}).sort((a, b) => a - b)) {
     const p = kyivParts(+key * 1000 + 12 * 3600 * 1000);
     if (sameDate(p, todayP) || sameDate(p, tomorrowP)) {
       days.push(buildDay(+key, json.fact.data[key][QUEUE], p, todayP));
     }
   }
-  const today = days.find((d) => d.isToday) ?? null;
-  const tomorrow = days.find((d) => !d.isToday) ?? null;
+  const today = days.find((d) => d.isToday) || null;
+  const tomorrow = days.find((d) => !d.isToday) || null;
 
   // Today and tomorrow form one continuous timeline so periods crossing midnight stay whole.
   const allSlots = days.flatMap((d) => d.slots);
@@ -165,10 +170,10 @@ export function buildModel(json, t = now()) {
   days.forEach((d) => { d.outages = dayOutages(d, segments); });
 
   const idx = segments.findIndex((s) => s.start <= t && t < s.end);
-  const current = segments[idx] ?? null;
-  const next = idx >= 0 ? segments[idx + 1] ?? null : null;
-  const afterNext = idx >= 0 ? segments[idx + 2] ?? null : null;
-  const nextOff = segments.find((s) => s.state === 'off' && s.end > t) ?? null;
+  const current = segments[idx] || null;
+  const next = idx >= 0 ? segments[idx + 1] || null : null;
+  const afterNext = idx >= 0 ? segments[idx + 2] || null : null;
+  const nextOff = segments.find((s) => s.state === 'off' && s.end > t) || null;
 
   return {
     now: t, days, today, tomorrow, segments, current, next, afterNext, nextOff,
@@ -176,7 +181,7 @@ export function buildModel(json, t = now()) {
     horizon: segments.length ? segments[segments.length - 1].end : null,
     progress: current ? (t - current.start) / (current.end - current.start) : 0,
     remaining: current ? current.end - t : 0,
-    scheduleUpdate: json?.fact?.update ?? null,
+    scheduleUpdate: (json && json.fact && json.fact.update) || null,
   };
 }
 
@@ -190,20 +195,20 @@ export function describe(m) {
 
   if (c.state === 'on') {
     if (!m.nextOff) return { state: 'on', title: 'Світло є', line: `Відключень попереду немає.`, left: null };
-    if (n?.state === 'maybe') return { state: 'on', title: 'Світло є', line: `Можливе вимкнення з ${at}, за ${left}.`, at, left };
-    if (n?.state === 'off') return { state: 'on', title: 'Світло є', line: `Вимкнуть о ${at}, за ${left}.`, at, left };
+    if ((n && n.state) === 'maybe') return { state: 'on', title: 'Світло є', line: `Можливе вимкнення з ${at}, за ${left}.`, at, left };
+    if ((n && n.state) === 'off') return { state: 'on', title: 'Світло є', line: `Вимкнуть о ${at}, за ${left}.`, at, left };
     return { state: 'on', title: 'Світло є', line: `До кінця відомого графіка ${left}.`, left };
   }
   if (c.state === 'off') {
-    if (n?.state === 'maybe') {
-      const sure = m.afterNext?.state === 'on' ? `, напевно — з ${fmtTime(m.afterNext.start)}` : '';
+    if ((n && n.state) === 'maybe') {
+      const sure = (m.afterNext && m.afterNext.state) === 'on' ? `, напевно — з ${fmtTime(m.afterNext.start)}` : '';
       return { state: 'off', title: 'Світла немає', line: `Можуть увімкнути з ${at}${sure}. Ще ${left}.`, at, left };
     }
-    if (n?.state === 'on') return { state: 'off', title: 'Світла немає', line: `Увімкнуть о ${at}, за ${left}.`, at, left };
+    if ((n && n.state) === 'on') return { state: 'off', title: 'Світла немає', line: `Увімкнуть о ${at}, за ${left}.`, at, left };
     return { state: 'off', title: 'Світла немає', line: `Відключення до кінця відомого графіка, ${left}.`, left };
   }
   if (c.state === 'maybe') {
-    const what = n?.state === 'off' ? 'далі вимкнення' : n?.state === 'on' ? 'далі світло' : 'далі невідомо';
+    const what = (n && n.state) === 'off' ? 'далі вимкнення' : (n && n.state) === 'on' ? 'далі світло' : 'далі невідомо';
     return { state: 'maybe', title: 'Перемикання', line: `Світла може не бути до ${fmtTime(c.end)}, ${what}.`, at: fmtTime(c.end), left };
   }
   return { state: 'unknown', title: 'Невідомо', line: 'У графіку незрозумілий статус.', left };
@@ -218,13 +223,13 @@ export function countdown(m) {
   const base = { h: Math.floor(total / 60), m: total % 60, at: n ? fmtTime(n.start) : fmtTime(c.end), state: c.state };
   if (c.state === 'on') {
     if (!m.nextOff) return { ...base, kicker: 'відключень попереду немає', empty: true };
-    return { ...base, kicker: n?.state === 'maybe' ? 'до можливого вимкнення' : 'до вимкнення' };
+    return { ...base, kicker: (n && n.state) === 'maybe' ? 'до можливого вимкнення' : 'до вимкнення' };
   }
   if (c.state === 'off') {
     if (!n) return { ...base, kicker: 'світла немає до кінця графіка', empty: true };
     return { ...base, kicker: n.state === 'maybe' ? 'до можливого увімкнення' : 'до увімкнення' };
   }
-  if (c.state === 'maybe') return { ...base, kicker: n?.state === 'off' ? 'перемикання, далі вимкнення' : 'перемикання ще' };
+  if (c.state === 'maybe') return { ...base, kicker: (n && n.state) === 'off' ? 'перемикання, далі вимкнення' : 'перемикання ще' };
   return { ...base, kicker: 'невідомий стан', empty: true };
 }
 

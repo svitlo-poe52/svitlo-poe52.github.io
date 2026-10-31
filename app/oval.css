@@ -24,7 +24,7 @@ body[data-state="maybe"] { --tone: #6a420a; }
   transition: background-color 3s ease;
 }
 .band > * { position: absolute; }
-.rim { inset: 0; border: calc(26 * var(--u)) solid var(--glow); filter: blur(calc(44 * var(--u))); }
+.rim { top: 0; right: 0; bottom: 0; left: 0; border: calc(26 * var(--u)) solid var(--glow); filter: blur(calc(44 * var(--u))); }
 .ring, .hole {
   left: 50%; top: 50%;
   width: var(--hw); height: calc(570 * var(--u));
@@ -35,26 +35,28 @@ body[data-state="maybe"] { --tone: #6a420a; }
 .hole { background: var(--hole); transition: background-color 1s; }
 
 /* Two 254px light spots ride an ellipse just outside the hole, opposite each other, one lap every 40s.
-   Two eased half-swings, a quarter period apart, trace the ellipse without JS. */
-@property --ox { syntax: '<number>'; inherits: false; initial-value: 0; }
-@property --oy { syntax: '<number>'; inherits: false; initial-value: 0; }
+   The wrapper swings sideways and the spot swings up and down a quarter period later, tracing the ellipse. */
+.orbit {
+  left: 50%; top: 50%; width: 0; height: 0;
+  animation: orbit-x 20s ease-in-out -10s infinite alternate;
+}
 .spot {
-  left: 50%; top: 50%;
+  position: absolute;
   width: calc(254 * var(--u)); height: calc(254 * var(--u));
   margin: calc(-127 * var(--u)) 0 0 calc(-127 * var(--u));
   border-radius: 50%;
   background: var(--glow);
   opacity: 0.6;
   filter: blur(calc(111 * var(--u)));
-  transform: translate(calc(var(--ox) * var(--hw) * 0.535), calc(var(--oy) * 305 * var(--u)));
-  animation: orbit-x 20s ease-in-out -10s infinite alternate, orbit-y 20s ease-in-out 0s infinite alternate;
+  animation: orbit-y 20s ease-in-out 0s infinite alternate;
 }
-@keyframes orbit-x { from { --ox: -1; } to { --ox: 1; } }
-@keyframes orbit-y { from { --oy: -1; } to { --oy: 1; } }
+@keyframes orbit-x { from { transform: translateX(calc(var(--hw) * -0.535)); } to { transform: translateX(calc(var(--hw) * 0.535)); } }
+@keyframes orbit-y { from { transform: translateY(calc(-305 * var(--u))); } to { transform: translateY(calc(305 * var(--u))); } }
 /* Half a lap ahead: always diagonally opposite the first spot. */
-.spot-b { animation-delay: -30s, -20s; }
-body[data-state="maybe"] .spot { animation: orbit-x 20s ease-in-out -10s infinite alternate, orbit-y 20s ease-in-out 0s infinite alternate, blink 3.4s steps(1) infinite; }
-body[data-state="maybe"] .spot-b { animation-delay: -30s, -20s, -1.7s; }
+.orbit-b { animation-delay: -30s; }
+.orbit-b .spot { animation-delay: -20s; }
+body[data-state="maybe"] .spot { animation: orbit-y 20s ease-in-out 0s infinite alternate, blink 3.4s steps(1) infinite; }
+body[data-state="maybe"] .orbit-b .spot { animation-delay: -20s, -1.7s; }
 @keyframes blink { 0%, 100% { opacity: 0.6; } 22% { opacity: 0.2; } 25% { opacity: 0.55; } 68% { opacity: 0.25; } }
 
 .stage .clock {

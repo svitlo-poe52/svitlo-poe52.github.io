@@ -11,11 +11,11 @@ function copy(m, c) {
   const n = m.next;
   if (c.state === 'on') {
     if (c.empty) return { head: 'Згідно з графіком світло є', sub: 'Відключень попереду немає' };
-    return { head: 'Згідно з графіком світло є', sub: n?.state === 'maybe' ? `Можливе відключення<br>о ${c.at}` : `Відключення заплановане<br>о ${c.at}` };
+    return { head: 'Згідно з графіком світло є', sub: (n && n.state) === 'maybe' ? `Можливе відключення<br>о ${c.at}` : `Відключення заплановане<br>о ${c.at}` };
   }
   if (c.state === 'off') {
     if (c.empty) return { head: 'Згідно з графіком світло відсутнє', sub: 'До кінця відомого графіка' };
-    if (n?.state === 'maybe' && m.afterNext?.state === 'on') {
+    if ((n && n.state) === 'maybe' && (m.afterNext && m.afterNext.state) === 'on') {
       return { head: 'Згідно з графіком світло відсутнє', sub: `Увімкнення можливе о ${c.at}<br>напевно о ${fmtTime(m.afterNext.start)}` };
     }
     return { head: 'Згідно з графіком світло відсутнє', sub: `Увімкнення заплановане<br>о ${c.at}` };
@@ -39,7 +39,7 @@ function dayBlock(day, now, tone) {
     ? day.outages.map((o, i) => {
         const before = o.maybeBefore ? `<span class="sw">(${fmtTime(o.maybeBefore.start)})</span> ` : '';
         const after = o.maybeAfter ? ` <span class="sw">(${fmtTime(o.maybeAfter.end, day.end)})</span>` : '';
-        return `<li class="${o.end <= now ? 'past' : ''}"><span class="rn">${ROMAN[i] ?? i + 1}.</span><span>${before}${o.text}${after}</span><span class="d">${durationCaps(o.end - o.start)}</span></li>`;
+        return `<li class="${o.end <= now ? 'past' : ''}"><span class="rn">${ROMAN[i] || i + 1}.</span><span>${before}${o.text}${after}</span><span class="d">${durationCaps(o.end - o.start)}</span></li>`;
       }).join('')
     : '<li class="none"><span class="rn">—</span><span>Без відключень</span><span></span></li>';
   const title = day.isToday ? 'Графік відключень на сьогодні' : 'Графік відключень на завтра';
@@ -68,7 +68,7 @@ export function run({ onHero, tone }) {
     $('[data-clock]').innerHTML = c.empty
       ? '–<span class="colon">:</span>–'
       : `${pad(c.h)}<span class="colon">:</span>${pad(c.m)}`;
-    $('[data-update]').textContent = m.scheduleUpdate ?? '—';
+    $('[data-update]').textContent = m.scheduleUpdate || '—';
 
     const days = m.days.map((d) => dayBlock(d, m.now, tone));
     if (!m.tomorrowPublished) days.push(`<section class="day"><p class="spread">${spread('Графік на завтра ще не опубліковано')}</p></section>`);

@@ -25,6 +25,8 @@
     try { localStorage.setItem(KEY, root.dataset.theme); } catch (err) {}
     sync();
   });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', sync);
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  // Safari before 14 only has the old addListener API.
+  if (mq.addEventListener) mq.addEventListener('change', sync); else mq.addListener(sync);
   document.addEventListener('DOMContentLoaded', sync);
 })();
