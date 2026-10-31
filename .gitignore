@@ -6,3 +6,10 @@
 
 # Local preview config
 .claude/
+
+# Design explorations stay local
+demos/
+
+# Used only by the local demos
+assets/paper.webp
+shared/paper.css

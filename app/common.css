@@ -4,7 +4,7 @@
   --u: calc(min(100vw, 760px, 58vh) / 1080);
   --gut: max(calc(85 * var(--u)), 16px);
   --hw: min(calc(911 * 1.35 * var(--u)), calc(100vw - 2 * var(--gut)));
-  --dim: 0.58;
+  --dim: 0.72;
   --bg: #1c1a14;
   --ink: #d8d5cf;
   --text: #e8e7e5;
@@ -21,14 +21,14 @@
 :root[data-theme="light"] {
   --bg: #e6e1d8; --ink: #24211c; --text: #24211c; --glow: #fff6ea;
   --c-on: #7f945f; --c-off: #b4614e; --c-maybe: #c0954a;
-  --dim: 0.55;
+  --dim: 0.62;
   color-scheme: light;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     --bg: #e6e1d8; --ink: #24211c; --text: #24211c; --glow: #fff6ea;
     --c-on: #7f945f; --c-off: #b4614e; --c-maybe: #c0954a;
-    --dim: 0.55;
+    --dim: 0.62;
     color-scheme: light;
   }
 }

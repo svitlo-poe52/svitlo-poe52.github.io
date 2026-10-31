@@ -1,4 +1,4 @@
-import { start, countdown, statusNotes, fmtTime, QUEUE_LABEL } from '../../shared/schedule.js';
+import { start, countdown, statusNotes, fmtTime, QUEUE_LABEL } from '../shared/schedule.js';
 
 const $ = (s) => document.querySelector(s);
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];

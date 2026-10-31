@@ -14,13 +14,13 @@ Then open http://localhost:5173.
 
 ## Layout
 
-- `index.html` – the page (the oval design)
-- `demos/j-oval/` – its styles and script
-- `demos/noir/` – shared layout, copy and schedule rendering for the oval and square designs
+- `index.html` – the page
+- `app/` – page styles and scripts (`common.*` shared layout and schedule rendering, `oval.*` the oval band)
 - `shared/schedule.js` – fetching, Kyiv time, half-hour slots, today + tomorrow timeline, mocks
 - `shared/theme.js` – light/dark toggle
 - `assets/` – WebP textures
-- `demos/` – earlier design explorations; `demos/k-square/` is parked for later work
+
+Design explorations live in a local `demos/` folder that is not published.
 
 ## Testing states
 

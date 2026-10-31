@@ -65,6 +65,6 @@ body[data-state="maybe"] .spot-b { animation-delay: -30s, -20s, -1.7s; }
 }
 
 
-.texture { background-image: url("../../assets/noise-tile.webp"); mix-blend-mode: overlay; }
+.texture { background-image: url("../assets/noise-tile.webp"); mix-blend-mode: overlay; }
 
 .foot { width: var(--hw); max-width: 100%; margin-inline: auto; }

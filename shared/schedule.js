@@ -4,7 +4,8 @@ export const QUEUE_LABEL = QUEUE.replace('GPV', '');
 
 const TZ = 'Europe/Kyiv';
 const REFRESH_MS = 3 * 60 * 1000;
-const STALE_MS = 60 * 60 * 1000;
+// The parser only bumps lastUpdated when the schedule changes, so quiet hours are normal.
+const STALE_MS = 6 * 60 * 60 * 1000;
 
 const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
 const WEEKDAYS = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота'];
