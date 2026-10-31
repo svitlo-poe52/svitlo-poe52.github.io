@@ -1,0 +1,16 @@
+{
+  "name": "Світло · 5.2",
+  "short_name": "Світло",
+  "description": "Відлік до вимкнення та увімкнення світла і графік відключень для черги 5.2.",
+  "lang": "uk",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1c1a14",
+  "theme_color": "#1c1a14",
+  "icons": [
+    { "src": "icons/icon-192.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any" },
+    { "src": "icons/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" },
+    { "src": "icons/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "maskable" }
+  ]
+}
