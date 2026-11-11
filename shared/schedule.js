@@ -1,4 +1,7 @@
-const SOURCE = 'https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Poltavaoblenergo.json';
+// The contents API is cached for only 60s but allows 60 anonymous requests per hour per network;
+// raw.githubusercontent has no limit but is cached for 5 minutes and ignores query strings.
+const API_SOURCE = 'https://api.github.com/repos/yaroslav2901/OE_OUTAGE_DATA/contents/data/Poltavaoblenergo.json';
+const RAW_SOURCE = 'https://raw.githubusercontent.com/yaroslav2901/OE_OUTAGE_DATA/main/data/Poltavaoblenergo.json';
 export const QUEUE = 'GPV5.2';
 export const QUEUE_LABEL = QUEUE.replace('GPV', '');
 
@@ -6,7 +9,7 @@ export const QUEUE_LABEL = QUEUE.replace('GPV', '');
 const TZ = (() => {
   try { new Intl.DateTimeFormat('en', { timeZone: 'Europe/Kyiv' }); return 'Europe/Kyiv'; } catch (e) { return 'Europe/Kiev'; }
 })();
-const REFRESH_MS = 3 * 60 * 1000;
+const REFRESH_MS = 2 * 60 * 1000;
 
 const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
 const WEEKDAYS = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота'];
@@ -235,10 +238,21 @@ export function statusNotes(m, status) {
 
 // ---------- loading ----------
 
+let apiBlockedUntil = 0;
+
 async function fetchJson() {
   const mock = new URLSearchParams(location.search).get('mock');
   if (mock) return mockJson(mock.split(','));
-  const res = await fetch(`${SOURCE}?t=${Math.floor(Date.now() / 60000)}`, { cache: 'no-store' });
+  if (Date.now() > apiBlockedUntil) {
+    try {
+      const res = await fetch(API_SOURCE, { cache: 'no-cache', headers: { Accept: 'application/vnd.github.raw' } });
+      if (res.ok) return await res.json();
+      // Rate limited: use raw until the limit resets.
+      const reset = +res.headers.get('x-ratelimit-reset');
+      if (res.status === 403 || res.status === 429) apiBlockedUntil = reset ? reset * 1000 : Date.now() + 60 * 60 * 1000;
+    } catch (e) { /* network or CORS hiccup: fall through to raw */ }
+  }
+  const res = await fetch(RAW_SOURCE, { cache: 'no-cache' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -262,7 +276,8 @@ export function start(onChange) {
   }
 
   load();
-  setInterval(load, REFRESH_MS);
+  // Hidden tabs skip polling to save the API quota; becoming visible loads straight away.
+  setInterval(() => { if (!document.hidden) load(); }, REFRESH_MS);
   setInterval(render, 30 * 1000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') load();

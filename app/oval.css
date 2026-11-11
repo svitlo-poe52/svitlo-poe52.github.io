@@ -55,9 +55,10 @@ body[data-state="maybe"] { --tone: #6a420a; }
 /* Half a lap ahead: always diagonally opposite the first spot. */
 .orbit-b { animation-delay: -30s; }
 .orbit-b .spot { animation-delay: -20s; }
-body[data-state="maybe"] .spot { animation: orbit-y 20s ease-in-out 0s infinite alternate, blink 3.4s steps(1) infinite; }
-body[data-state="maybe"] .orbit-b .spot { animation-delay: -20s, -1.7s; }
-@keyframes blink { 0%, 100% { opacity: 0.6; } 22% { opacity: 0.2; } 25% { opacity: 0.55; } 68% { opacity: 0.25; } }
+/* Switching: the light sags and recovers unevenly, like an unsteady supply, instead of hard blinking. */
+body[data-state="maybe"] .spot { animation: orbit-y 20s ease-in-out 0s infinite alternate, sag 5.2s ease-in-out infinite; }
+body[data-state="maybe"] .orbit-b .spot { animation-delay: -20s, -2.9s; }
+@keyframes sag { 0%, 100% { opacity: 0.6; } 30% { opacity: 0.32; } 42% { opacity: 0.5; } 61% { opacity: 0.22; } 78% { opacity: 0.55; } }
 
 .stage .clock {
   --clock: 250;
