@@ -232,7 +232,6 @@ export function statusNotes(m, status) {
   else if (status.error) notes.push('Не вдалося оновити дані, показую останні завантажені.');
   // No age-based warning: the parser only writes when the schedule changes, so its timestamp says nothing about liveness.
   if (m && !m.today) notes.push('У даних немає графіка на сьогодні.');
-  if (m && !m.tomorrowPublished) notes.push('Графік на завтра ще не опубліковано.');
   return notes;
 }
 
