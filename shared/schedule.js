@@ -12,26 +12,16 @@ const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 
 const WEEKDAYS = ['неділя', 'понеділок', 'вівторок', 'середа', 'четвер', 'пʼятниця', 'субота'];
 
 // Each hourly status splits into two half-hour slots.
-// mfirst/msecond mark only the yellow "switching" half; the other half continues
-// its neighbour (checked against the official chart: "no, msecond" is off until :30).
+// Checked against the official chart: msecond is 30 min off then 30 min switching
+// (even after a "yes" hour), mfirst is 30 min switching then power.
 const HALVES = {
   yes: ['on', 'on'],
   no: ['off', 'off'],
   first: ['off', 'on'],
   second: ['on', 'off'],
-  mfirst: ['maybe', 'next'],
-  msecond: ['prev', 'maybe'],
+  mfirst: ['maybe', 'on'],
+  msecond: ['off', 'maybe'],
 };
-
-function resolveNeighbours(slots) {
-  for (let i = 0; i < slots.length; i++) {
-    if (slots[i].state === 'prev') slots[i].state = (slots[i - 1] ? slots[i - 1].state : 'on');
-  }
-  for (let i = slots.length - 1; i >= 0; i--) {
-    if (slots[i].state === 'next') slots[i].state = (slots[i + 1] ? slots[i + 1].state : 'on');
-  }
-  for (const s of slots) if (s.state === 'prev' || s.state === 'next') s.state = 'on';
-}
 
 const partsFmt = new Intl.DateTimeFormat('en-GB', {
   timeZone: TZ, hourCycle: 'h23',
@@ -165,7 +155,6 @@ export function buildModel(json, t = now()) {
 
   // Today and tomorrow form one continuous timeline so periods crossing midnight stay whole.
   const allSlots = days.flatMap((d) => d.slots);
-  resolveNeighbours(allSlots);
   const segments = mergeSegments(allSlots);
   days.forEach((d) => { d.outages = dayOutages(d, segments); });
 
